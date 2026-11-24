@@ -359,6 +359,10 @@ pub struct CharProps {
     /// Tracked formatting change (`w:rPrChange`): the formatting before it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fmt_change: Option<Box<PropChange<CharProps>>>,
+    /// Extension data on this run ([`crate::ext`]). A mark like `link`, not formatting: it moves
+    /// with the text and Clear Formatting keeps it.
+    #[serde(skip_serializing_if = "crate::Ext::is_empty")]
+    pub ext: crate::Ext,
 }
 
 /// East Asian typography settings of a run (ISO/IEC 29500-1 §17.3.2.10, `w:eastAsianLayout`):
@@ -514,6 +518,7 @@ impl CharProps {
 
     fn minus_document_marks(&mut self, base: &CharProps) {
         drop_same_fields!(self, base; link, ins, del, ligatures);
+        self.ext.minus(&base.ext);
     }
 
     /// Apply every `Some` field of `patch` on top of `self`.
@@ -545,6 +550,7 @@ impl CharProps {
 
     fn overlay_document_marks(&mut self, patch: &CharProps) {
         overlay_fields!(self, patch; link, ins, del, fmt_change, ligatures);
+        self.ext.overlay(&patch.ext);
     }
     pub fn overlaid(mut self, patch: &CharProps) -> CharProps {
         self.overlay(patch);
@@ -572,6 +578,7 @@ impl CharProps {
             ins: self.ins,
             del: self.del,
             fmt_change: self.fmt_change.clone(),
+            ext: self.ext.clone(),
             // A symbol stays the symbol it is.
             sym_font: self.sym_font.clone(),
             ..Default::default()
@@ -579,6 +586,6 @@ impl CharProps {
     }
     /// Just the formatting: without the link, revision marks and tracked formatting change.
     pub fn formatting(&self) -> CharProps {
-        CharProps { link: None, ins: None, del: None, fmt_change: None, ..self.clone() }
+        CharProps { link: None, ins: None, del: None, fmt_change: None, ext: crate::Ext::default(), ..self.clone() }
     }
 }

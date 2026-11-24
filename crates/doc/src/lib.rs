@@ -23,6 +23,7 @@ pub mod edit;
 pub mod effects;
 pub mod encoding;
 pub mod eq;
+pub mod ext;
 pub mod fields;
 pub mod fill;
 pub mod freeform;
@@ -85,6 +86,7 @@ pub use block::{Block, Blocks, BoxBudget, MAX_TEXT_BOX_DEPTH};
 pub use compare::para_block;
 use document::MediaIndex;
 pub use error::{DocError, Result};
+pub use ext::{Ext, ExtKeyError, MAX_EXT_KEY_LEN, valid_ext_key};
 pub use missing::{MAX_MISSING_PICTURES, MissingPicture, MissingPictureReason, MissingPictures, picture_hash};
 pub use parts::{MAX_LINKED_BOXES, MAX_TEXT_BOX_INSET, NoteSeparators, Part, PartKind, PermRange, TEXT_BOX_INSET, TextBody, free_id};
 pub use position::{Path, Pos, StoryRef};
@@ -132,6 +134,10 @@ pub struct Document {
     /// The document's own building blocks (its glossary document), in file order.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub glossary: Vec<BuildingBlock>,
+    /// Extension data an application keeps with the document ([`ext`]): saved, compared and
+    /// undone with it.
+    #[serde(skip_serializing_if = "Ext::is_empty")]
+    pub ext: Ext,
     /// Lookup cache for [`Document::add_media`]; not part of the document (never saved, ignored
     /// by `==`).
     #[serde(skip)]
