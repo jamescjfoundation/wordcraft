@@ -127,6 +127,7 @@ fn clear(s: &mut Session, v: &Value) -> CmdResult {
                     numbering: p.numbering,
                     num_change: p.num_change.take(),
                     fmt_change: p.fmt_change.take(),
+                    ext: std::mem::take(&mut p.ext),
                     ..Default::default()
                 };
             })?;

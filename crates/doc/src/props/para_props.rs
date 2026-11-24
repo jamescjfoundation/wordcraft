@@ -506,6 +506,10 @@ pub struct ParaProps {
     /// file (not laid out yet); Word sizes a line by it, so dropping it changes Word's pages.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub text_alignment: Option<TextAlignment>,
+    /// Extension data on this paragraph ([`crate::ext`]). Not formatting: kept on the paragraph
+    /// itself, never inherited from a style.
+    #[serde(skip_serializing_if = "crate::Ext::is_empty")]
+    pub ext: crate::Ext,
 }
 
 impl ParaProps {
@@ -547,6 +551,6 @@ impl ParaProps {
     }
     /// Just the formatting: without the tracked changes.
     pub fn formatting(&self) -> ParaProps {
-        ParaProps { num_change: None, fmt_change: None, ..self.clone() }
+        ParaProps { num_change: None, fmt_change: None, ext: crate::Ext::default(), ..self.clone() }
     }
 }

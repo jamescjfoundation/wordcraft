@@ -144,6 +144,8 @@ fn every_char_prop_round_trips() {
         ins: None,
         del: None,
         fmt_change: None,
+        // Extension data is not a DOCX property (the native JSON keeps it).
+        ext: Default::default(),
     };
     let auto =
         CharProps { color: Some(TextColor::Auto), highlight: Some(Highlight::None), vert_align: Some(VertAlign::Subscript), ..Default::default() };
@@ -225,6 +227,8 @@ fn every_para_prop_round_trips() {
         fmt_change: None,
         snap_to_grid: Some(false),
         text_alignment: Some(TextAlignment::Top),
+        // Extension data is not a DOCX property (the native JSON keeps it).
+        ext: Default::default(),
     };
     let variants = [
         ParaProps { line_spacing: Some(LineSpacing::AtLeast(14.0)), indent_first: Some(24.0), align: Some(Align::Center), ..Default::default() },

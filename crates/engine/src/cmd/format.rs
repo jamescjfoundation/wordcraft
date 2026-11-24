@@ -826,14 +826,17 @@ fn clear(s: &mut Session, _: &Value) -> CmdResult {
             // Clear Formatting also resets the paragraph to Normal.
             s.doc.format_paragraphs(&a, &b, &|p| {
                 let num = p.numbering;
+                let ext = std::mem::take(&mut p.ext);
                 *p = Default::default();
                 p.numbering = num.filter(|_| false);
+                // Extension data is the app's, not formatting.
+                p.ext = ext;
             })?;
         }
         None => {
             s.pending = Some(CharProps::default());
             let f = s.sel.focus.clone();
-            s.doc.format_paragraphs(&f, &f, &|p| *p = Default::default())?;
+            s.doc.format_paragraphs(&f, &f, &|p| *p = wordcraft_doc::props::ParaProps { ext: std::mem::take(&mut p.ext), ..Default::default() })?;
         }
     }
     sel_result(s)

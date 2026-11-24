@@ -75,6 +75,7 @@ impl Document {
             media: BTreeMap::new(),
             passthrough: BTreeMap::new(),
             glossary: Vec::new(),
+            ext: crate::Ext::default(),
             media_index: MediaIndex::default(),
             kept: Default::default(),
             missing_pictures: Default::default(),
@@ -153,6 +154,7 @@ impl Document {
             media,
             passthrough,
             glossary,
+            ext,
             media_index: _,
             kept: _,
             missing_pictures: _,
@@ -174,6 +176,7 @@ impl Document {
             media: other_media,
             passthrough: other_passthrough,
             glossary: other_glossary,
+            ext: other_ext,
             media_index: _,
             kept: _,
             missing_pictures: _,
@@ -194,6 +197,7 @@ impl Document {
             && same_bytes(media, other_media)
             && same_bytes(passthrough, other_passthrough)
             && same_glossary(glossary, other_glossary)
+            && ext == other_ext
     }
 
     pub fn story(&self, s: StoryRef) -> Option<&Blocks> {

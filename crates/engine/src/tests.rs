@@ -13126,3 +13126,18 @@ fn resolving_away_an_empty_paragraph_with_a_section_break_keeps_the_next_paragra
         assert_eq!(s.doc.last_section.margin_left, 72.0, "{cmd}: the following section's setup stays");
     }
 }
+
+#[test]
+fn resetting_and_clearing_formatting_keep_paragraph_extension_data() {
+    for id in ["para.reset", "format.clear"] {
+        let mut s = Session::new(wordcraft_doc::Document::from_text("Some text\n"));
+        if let Some(wordcraft_doc::Block::Para(p)) = s.doc.body.get_mut(0).map(std::sync::Arc::make_mut) {
+            p.props.ext.set("app.key", json!(1)).unwrap();
+            p.props.indent_left = Some(36.0);
+        }
+        s.run("select.all", &json!({})).unwrap();
+        s.run(id, &json!({})).unwrap();
+        let p = s.doc.body[0].as_para().unwrap();
+        assert_eq!(p.props.ext.get("app.key"), Some(&json!(1)), "{id} keeps extension data");
+    }
+}
